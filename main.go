@@ -1,95 +1,119 @@
 package main
 
 import (
-	// "fmt"
-	// "os"
-	// "short-link/RandStrings"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"path/filepath"
+	"log"
+	"net/url"
+	"strings"
 
-	"shortLink/HashString"
+	"github.com/google/uuid"
 )
 
-
 func main() {
-	// fmt.Println("enter an interger number for generatin string:")
-	// var i int
-	// fmt.Scan(&i)
-	// var p *int = &i
-	// if *p < 350 {
-	// 	fmt.Println("the number must be bigger than 3 \n please enter a number bigger than 350")
-	// 	return
-	// }
-	// // fmt.Println(RandString.RandStringRunes(*p))
-	// data := RandString.RandStringRunes(*p)
-	// filePath := data[:8] + ".txt"
-	// file, err := os.Create(filePath)
-	// if err != nil {
-	// 	fmt.Println("Error creating file:", err)
-	// 	return
-	// }
-	// defer file.Close() // Make sure to close the file when you're done with it
-	// _, err = file.Write([]byte(data))
-	// if err != nil {
-	// 	fmt.Println("Error writing to file:", err)
-	// 	return
-	// }
-	dirPath := "./"
-	files, err := getTxtFilesInDirectory(dirPath)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
+	fmt.Print("test")
+	myMap := make(map[string]string)
+	counter := 0
 
-	fmt.Println("List of .txt files:")
-	for _, file := range files {
-		fmt.Println(file)
-	}
-	for _, filePath := range files {
-		content, err := readContentFromFile(filePath)
-		if err != nil {
-			fmt.Printf("Error reading file %s: %v\n", filePath, err)
-			continue
-		}
-		file, err := os.Create("hash-" + filepath.Base(filePath))
-		if err != nil {
-			fmt.Println("Error creating file:", err)
-			return
-		}
-		defer file.Close()
+	for counter < 1 {
+		fmt.Println("welcome\n1.shorten a link\n2.give the short url for the full url\n3.exit")
+		var inputUser int
+		fmt.Scan(&inputUser)
+		if inputUser == 1 {
+			fmt.Println("Enter the url that you want to make shortlink of :")
+			var link string
+			fmt.Scan(&link)
+			fmt.Println(link)
+			u, err := url.ParseRequestURI(link)
+			if err != nil {
+				log.Fatalln("can not parse the url")
+			}
+			fmt.Println(u.Host)
+			newUUID := uuid.New()
+			strUuid := newUUID.String()
+			fmt.Println(strUuid)
+			myMap[strUuid] = link
+			fmt.Print("here is the shortlink: \n http://shorten.sh/")
+			fmt.Println(newUUID)
+		} else if inputUser == 2 {
+			fmt.Println("enter the short-link to view the original link if it exists: ")
+			var link string
+			fmt.Scan(&link)
+			fmt.Println(link)
+			u, err := url.ParseRequestURI(link)
+			if err != nil {
+				log.Fatalln("can not parse the url")
+			}
+			fmt.Println(u.Path)
+			s := strings.Split(u.Path, "/")
+			fmt.Println(s[1])
+			f := myMap[s[1]]
+			fmt.Println(myMap)
+			fmt.Println(f)
 
-		// Store the content in a new variable (you can process or use it as needed)
-		newVariable := content
-		data := HashString.HashString(content)
-		_, err = file.Write([]byte(data))
-		// Print or use the new variable as needed
-		fmt.Printf("Content of %s:\n%s\n", filePath, newVariable)
+		} else if inputUser == 3 {
+			fmt.Println("bye")
+			break
+		} else {
+			fmt.Println("the number your enteres is out of options")
+			shortenLink()
+			showOriginalLink()
+			menu()
+		}
 	}
 }
 
-func getTxtFilesInDirectory(dirPath string) ([]string, error) {
-	var txtFiles []string
-
-	err := filepath.Walk(dirPath, func(path string, info os.FileInfo, err error) error {
-		// Check if the file has a ".txt" extension
-		if filepath.Ext(path) == ".txt" {
-			txtFiles = append(txtFiles, path)
-		}
-		return nil
-	})
+func shortenLink() {
+	myMap := make(map[string]string)
+	fmt.Println("Enter the url that you want to make shortlink of:")
+	var link string
+	fmt.Scan(&link)
+	fmt.Println(link)
+	u, err := url.ParseRequestURI(link)
 	if err != nil {
-		return nil, err
+		log.Fatalln("can not parse the url")
 	}
-
-	return txtFiles, nil
+	fmt.Println(u.Host)
+	newUUID := uuid.New()
+	strUuid := newUUID.String()
+	fmt.Println(strUuid)
+	myMap[strUuid] = link
+	fmt.Print("here is the shortlink: \n http://shorten.sh/")
+	fmt.Println(newUUID)
 }
 
-func readContentFromFile(filePath string) (string, error) {
-	content, err := ioutil.ReadFile(filePath)
+func showOriginalLink() {
+	fmt.Println("enter the short-link to view the original link if it exists: ")
+	var link string
+	fmt.Scan(&link)
+	fmt.Println(link)
+	u, err := url.ParseRequestURI(link)
 	if err != nil {
-		return "", err
+		log.Fatalln("can not parse the url")
 	}
-	return string(content), nil
+	fmt.Println(u.Path)
+	s := strings.Split(u.Path, "/")
+	fmt.Println(s[1])
+	f := myMap[s[1]]
+	fmt.Println(myMap)
+	fmt.Println(f)
+}
+
+func menu() {
+	counter := 0
+
+	for counter < 1 {
+		fmt.Println("welcome\n1.shorten a link\n2.give the short url for the full url\n3.exit")
+		var inputUser int
+		fmt.Scan(&inputUser)
+		if inputUser == 1 {
+			shortenLink()
+		} else if inputUser == 2 {
+			showOriginalLink()
+		} else if inputUser == 3 {
+			fmt.Println("bye")
+			break
+		} else {
+			fmt.Println("the number your enteres is out of options")
+		}
+	}
 }
