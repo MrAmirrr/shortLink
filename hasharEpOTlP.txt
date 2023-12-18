@@ -1,2 +1,0 @@
-bb0cc55f3e307b222fd30a7670dd84d103d457e3276bf996350696c97c054d7f
-two function one shorten the url one get short url and show the logs url
